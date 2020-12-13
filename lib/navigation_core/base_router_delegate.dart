@@ -1,15 +1,17 @@
-import 'package:flutter/widgets.dart';
+import 'dart:developer';
 
+import 'package:flutter/widgets.dart';
 import 'base_state.dart';
 
-abstract class BaseRouterDelegate<T extends NavigationBaseState> extends RouterDelegate<T>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin<T>
-    implements OpenNavigator<T> {
+abstract class BaseRouterDelegate<S extends NavigationBaseState, E>
+    extends RouterDelegate<S>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<S>
+    implements OpenNavigator<E> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  final List<T> _cachedStates = [];
+  final List<S> _cachedStates = [];
 
   @override
-  T get currentConfiguration => _cachedStates.last;
+  S get currentConfiguration => _cachedStates.last;
 
   BaseRouterDelegate() {
     _cachedStates.add(initState());
@@ -17,7 +19,6 @@ abstract class BaseRouterDelegate<T extends NavigationBaseState> extends RouterD
 
   @override
   Widget build(BuildContext context) {
-    print('build $_cachedStates');
     return Navigator(
       key: navigatorKey,
       pages: _cachedStates.map(mapStateToPage).toList(),
@@ -34,29 +35,32 @@ abstract class BaseRouterDelegate<T extends NavigationBaseState> extends RouterD
     );
   }
 
-  T initState();
-  Page mapStateToPage(T e);
+  S initState();
+
+  Page mapStateToPage(S state);
+
+  S mapEventToState(E event);
 
   @override
-  Future<void> setNewRoutePath(T path) => _pathUpdated(path);
+  @protected
+  Future<void> setNewRoutePath(S state) => _pathUpdated(state);
 
-  Future<void> _pathUpdated(T path) async {
+  Future<void> _pathUpdated(S state) async {
     _cachedStates.removeWhere((e) => e.launchMode == LaunchMode.NoHistory);
-    final launchMode = path.launchMode;
+    final launchMode = state.launchMode;
     if (launchMode == LaunchMode.MoveToTop)
-      await _moveToTop(path);
+      await _moveToTop(state);
     else if (launchMode == LaunchMode.DropToSingle)
-      await _dropToSingle(path);
-    else if (launchMode == LaunchMode.NoHistory) await _noHistory(path);
-    print('path updated $_cachedStates');
+      await _dropToSingle(state);
+    else if (launchMode == LaunchMode.NoHistory) await _noHistory(state);
   }
 
-  Future<void> _moveToTop(T path) async {
-    _cachedStates.removeWhere((e) => e == path);
-    _cachedStates.add(path);
+  Future<void> _moveToTop(S state) async {
+    _cachedStates.removeWhere((s) => s == state);
+    _cachedStates.add(state);
   }
 
-  Future<void> _dropToSingle(T path) async {
+  Future<void> _dropToSingle(S path) async {
     final lastIndex = _cachedStates.indexWhere((e) => e == path);
 
     if (lastIndex >= 0) {
@@ -68,17 +72,20 @@ abstract class BaseRouterDelegate<T extends NavigationBaseState> extends RouterD
     }
   }
 
-  Future<void> _noHistory(T path) async {
+  Future<void> _noHistory(S path) async {
     _cachedStates.add(path);
   }
 
   @override
-  Future<void> navigateTo(T path) async {
-    await _pathUpdated(path);
+  Future<void> navigate(E event) async {
+    log("navigate event $event");
+    final state = mapEventToState(event);
+    log("navigate to state $state");
+    await _pathUpdated(state);
     notifyListeners();
   }
 }
 
-abstract class OpenNavigator<T extends NavigationBaseState> {
-  Future<void> navigateTo(T path);
+abstract class OpenNavigator<E> {
+  Future<void> navigate(E event);
 }
