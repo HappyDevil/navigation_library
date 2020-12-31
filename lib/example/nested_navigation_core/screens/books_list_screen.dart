@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:navigation_library_impl/example/nested_navigation_core/inner_navigation/inner_router_delegate.dart';
 import 'package:navigation_library_impl/example/nested_navigation_core/model/data_provider.dart';
-import 'package:navigation_library_impl/example/nested_navigation_core/inner_navigation/navigation_models.dart';
+import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/navigation_models.dart';
+import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/outer_router_delegate.dart';
 
 class BooksListScreen extends StatelessWidget {
   BooksListScreen();
@@ -16,7 +16,7 @@ class BooksListScreen extends StatelessWidget {
               (book) => ListTile(
                 title: Text(book.title),
                 subtitle: Text(book.author),
-                onTap: () => InnerRouterDelegate.I.navigate(NavigateToBook(id: book.id)),
+                onTap: () => OuterRouterDelegate.navigator.navigate(NavigateToBook(id: book.id)),
               ),
             )
             .toList(),

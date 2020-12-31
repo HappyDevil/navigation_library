@@ -18,7 +18,7 @@ class BookRouterDelegate extends BaseRouterDelegate<BookAppNavigationState, Book
   }
 
   @override
-  BookAppNavigationState initState() => BookListState();
+  List<BookAppNavigationState> initState() => [BookListState()];
 
   @override
   BookAppNavigationState mapEventToState(final BookAppNavigationEvent event) {
