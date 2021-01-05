@@ -4,12 +4,12 @@ import 'package:navigation_library_impl/navigation_core/base_launch_modes.dart';
 abstract class InnerNavigationState extends OuterNavigationState {}
 
 class OpenBookState extends InnerNavigationState {
+  OpenBookState(this.id);
+
   @override
   LaunchMode get launchMode => MoveToTop();
 
   final int id;
-
-  OpenBookState(this.id);
 
   @override
   String toString() => 'OpenBookState{id: $id}';
@@ -51,9 +51,9 @@ class InnerNotFoundState extends InnerNavigationState {
 abstract class InnerNavigationEvents {}
 
 class DidUpdateWidgetEvent extends InnerNavigationEvents {
-  final InnerNavigationState innerNavigationState;
-
   DidUpdateWidgetEvent(this.innerNavigationState);
+
+  final InnerNavigationState innerNavigationState;
 
   @override
   bool operator ==(Object other) =>

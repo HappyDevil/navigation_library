@@ -41,9 +41,9 @@ class ParentChildStubStateConfigurator<PS extends NavigationBaseState, CS extend
 }
 
 class ChildStateCleaner<PS, CS> extends StatesInterceptor<PS> {
-  final ChildNavigationStubState childNavigationStubState;
-
   ChildStateCleaner(this.childNavigationStubState);
+
+  final ChildNavigationStubState childNavigationStubState;
 
   @override
   List<PS> intercept(List<PS> states) {

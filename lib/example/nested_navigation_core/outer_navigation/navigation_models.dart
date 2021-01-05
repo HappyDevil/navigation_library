@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:navigation_library_impl/navigation_core/base_launch_modes.dart';
 import 'package:navigation_library_impl/navigation_core/base_state.dart';
 
@@ -58,9 +57,9 @@ class NavigateToMainPage extends OuterNavigationEvents {
 }
 
 class ChangeScreenEvent extends OuterNavigationEvents {
-  final int newPageIndex;
-
   ChangeScreenEvent(this.newPageIndex);
+
+  final int newPageIndex;
 
   @override
   bool operator ==(Object other) =>
