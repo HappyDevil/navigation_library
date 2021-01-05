@@ -7,7 +7,7 @@ class NotFoundPage extends BasePage<NotFoundState> {
   NotFoundPage(NotFoundState state) : super(state);
 
   @override
-  Route createRoute(BuildContext context) => MaterialPageRoute(
+  Route createRoute(BuildContext context) => MaterialPageRoute<dynamic>(
         settings: this,
         builder: (BuildContext context) {
           return UnknownScreen();

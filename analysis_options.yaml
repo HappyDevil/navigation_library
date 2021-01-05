@@ -1,0 +1,52 @@
+include: package:lint/analysis_options.yaml
+
+linter:
+  rules:
+    # Use parameter order as in json response
+    always_put_required_named_parameters_first: true
+
+    # Util classes are awesome!
+    avoid_classes_with_only_static_members: true
+
+    # Make constructors the first thing in every class
+    sort_constructors_first: true
+
+    # The new tabs vs. spaces. Choose wisely
+    prefer_single_quotes: true
+
+    # Blindly follow the Flutter code style, which prefers types everywhere
+    always_specify_types: true
+      - annotate_overrides
+      - await_only_futures
+      - camel_case_types
+      - cancel_subscriptions
+      - close_sinks
+      - comment_references
+      - constant_identifier_names
+      - control_flow_in_finally
+      - empty_statements
+
+    public_member_api_docs: false
+      - annotate_overrides
+      - await_only_futures
+      - camel_case_types
+      - cancel_subscriptions
+      - close_sinks
+      - comment_references
+      - constant_identifier_names
+      - control_flow_in_finally
+      - empty_statements
+
+analyzer:
+  exclude: [ build/** ]
+  enable-experiment:
+    - non-nullable
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
+  errors:
+    missing_return: error
+    missing_required_param: error
+    parameter_assignments: error
+    invalid_assignment: error
+    todo: ignore

@@ -8,7 +8,7 @@ import 'inner_navigation/inner_router_delegate.dart';
 class NestedNavigationApp extends StatelessWidget {
   final OuterRouterDelegate _routerDelegate = OuterRouterDelegate.I;
   final OuterRouteInformationParser _routeInformationParser = OuterRouteInformationParser();
-  static RouteInformationProvider routeInformationProvider;
+  static RouteInformationProvider? routeInformationProvider;
 
   @override
   Widget build(BuildContext context) {

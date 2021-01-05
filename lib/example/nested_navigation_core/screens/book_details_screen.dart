@@ -4,7 +4,7 @@ class BookDetailsScreen extends StatelessWidget {
   final int book;
 
   BookDetailsScreen({
-    @required this.book,
+    required this.book,
   });
 
   @override
@@ -16,11 +16,9 @@ class BookDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (book != null) ...[
-              Text(book.toString(),
-                  style: Theme.of(context).textTheme.headline6),
-              Text(book.toString(),
-                  style: Theme.of(context).textTheme.subtitle1),
+            ...[
+              Text(book.toString(), style: Theme.of(context).textTheme.headline6),
+              Text(book.toString(), style: Theme.of(context).textTheme.subtitle1),
             ],
           ],
         ),

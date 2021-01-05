@@ -1,17 +1,30 @@
-enum LaunchMode { MoveToTop, DropToSingle, NoHistory }
+import 'package:flutter/foundation.dart';
+import 'package:navigation_library_impl/navigation_core/base_launch_modes.dart';
 
 abstract class NavigationBaseState {
   LaunchMode get launchMode;
 }
 
+abstract class ChildNavigationStubState extends NavigationBaseState {
+  /**
+   * Indexes of child navigation three in main navigation stack
+   */
+  ChildNavigationStubState(this.startIndex, this.endIndex);
+  final int startIndex;
+  final int endIndex;
+
+  @override
+  @nonVirtual
+  LaunchMode get launchMode => VirtualState();
+}
+
 class NavigatorDelegateState<S extends NavigationBaseState> {
+  NavigatorDelegateState({List<S> initStates = const []}) : _states = initStates.toList();
+
   final List<S> _states;
 
   List<S> get states => _states.toList();
-
-  get lastState => _states.last;
-
-  NavigatorDelegateState(List<S> states) : _states = states ?? [];
+  S get lastState => _states.last;
 
   @override
   bool operator ==(Object other) =>
@@ -26,28 +39,28 @@ class NavigatorDelegateState<S extends NavigationBaseState> {
     return 'NavigatorDelegateState{_states: $_states}';
   }
 
-  NavigatorDelegateState copyWith({
-    List<S> states,
+  NavigatorDelegateState<S> copyWith({
+    List<S>? states,
   }) {
     if ((states == null || identical(states, this._states))) {
       return this;
     }
 
-    return NavigatorDelegateState(states ?? this._states);
+    return NavigatorDelegateState(initStates: states);
   }
 
-  NavigatorDelegateState clearNoHistory() =>
-      copyWith(states: _states.where((e) => e.launchMode != LaunchMode.NoHistory).toList());
+  NavigatorDelegateState<S> clearNoHistory() =>
+      copyWith(states: _states.where((e) => !(e.launchMode is NoHistory)).toList());
 
-  NavigatorDelegateState<NavigationBaseState> addNewState(state) {
+  NavigatorDelegateState<S> addNewState(S state) {
     final launchMode = state.launchMode;
 
-    List<S> newStates;
-    if (launchMode == LaunchMode.MoveToTop) {
+    List<S>? newStates;
+    if (launchMode is MoveToTop) {
       newStates = _moveToTop(state);
-    } else if (launchMode == LaunchMode.DropToSingle) {
+    } else if (launchMode is DropToSingle) {
       newStates = _dropToSingle(state);
-    } else if (launchMode == LaunchMode.NoHistory) {
+    } else if (launchMode is NoHistory) {
       newStates = _noHistory(state);
     }
 

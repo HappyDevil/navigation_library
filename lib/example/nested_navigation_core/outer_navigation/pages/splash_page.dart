@@ -7,7 +7,7 @@ class SplashPage extends BasePage<SplashState> {
   SplashPage(SplashState state) : super(state);
 
   @override
-  Route createRoute(BuildContext context) => MaterialPageRoute(
+  Route createRoute(BuildContext context) => MaterialPageRoute<dynamic>(
         settings: this,
         builder: (context) => SplashScreen(),
       );

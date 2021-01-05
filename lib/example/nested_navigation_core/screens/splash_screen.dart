@@ -11,7 +11,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 3)).then((value) => OuterRouterDelegate.I.navigate(NavigateToMainPage()));
+    Future<void>.delayed(Duration(seconds: 3)).then((value) => OuterRouterDelegate.I.navigate(NavigateToMainPage()));
   }
 
   @override

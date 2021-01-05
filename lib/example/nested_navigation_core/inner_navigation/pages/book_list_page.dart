@@ -7,7 +7,7 @@ class BookListPage extends BasePage<BookListState> {
   BookListPage(BookListState state) : super(state);
 
   @override
-  Route createRoute(BuildContext context) => MaterialPageRoute(
+  Route createRoute(BuildContext context) => MaterialPageRoute<dynamic>(
         settings: this,
         builder: (BuildContext context) {
           return BooksListScreen();

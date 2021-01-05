@@ -4,25 +4,26 @@ import 'package:navigation_library_impl/example/navigation_core/model/navigation
 import 'package:navigation_library_impl/example/navigation_core/navigation/pages/book_detail_page.dart';
 import 'package:navigation_library_impl/example/navigation_core/navigation/pages/book_list_page.dart';
 import 'package:navigation_library_impl/example/navigation_core/navigation/pages/not_found_page.dart';
-import 'package:navigation_library_impl/navigation_core/base_router_delegate.dart';
+import 'package:navigation_library_impl/navigation_core/base_router_delegate_impl.dart';
 
-class BookRouterDelegate extends BaseRouterDelegate<BookAppNavigationState, BookAppNavigationEvent> {
+class BookRouterDelegate extends ParentBaseRouterDelegate<BookAppNavigationState, BookAppNavigationEvent> {
   BookRouterDelegate._create() : super();
   static final BookRouterDelegate I = BookRouterDelegate._create();
 
   @override
-  Page mapStateToPage(e) {
-    if (e is OpenBookState) return BookDetailPage(e);
-    if (e is BookListState) return BookListPage(e);
-    return NotFoundPage(e);
+  Page mapStateToPage(state) {
+    if (state is OpenBookState) return BookDetailPage(state);
+    if (state is BookListState) return BookListPage(state);
+    if (state is NotFoundState) return NotFoundPage(state);
+    throw UnimplementedError('state not supported ${state.runtimeType}');
   }
 
   @override
-  List<BookAppNavigationState> initState() => [BookListState()];
+  List<BookAppNavigationState> get initState => [BookListState()];
 
   @override
   BookAppNavigationState mapEventToState(final BookAppNavigationEvent event) {
     if (event is NavigateToBook) return OpenBookState(event.id);
-    throw UnimplementedError("event type is not supports ${event.runtimeType}");
+    throw UnimplementedError('event type is not supports ${event.runtimeType}');
   }
 }

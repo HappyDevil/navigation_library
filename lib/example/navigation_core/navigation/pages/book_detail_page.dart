@@ -7,7 +7,7 @@ class BookDetailPage extends BasePage<OpenBookState> {
   BookDetailPage(OpenBookState state) : super(state);
 
   @override
-  Route createRoute(BuildContext context) => MaterialPageRoute(
+  Route createRoute(BuildContext context) => MaterialPageRoute<dynamic>(
         settings: this,
         builder: (BuildContext context) {
           return BookDetailsScreen(book: state.id);

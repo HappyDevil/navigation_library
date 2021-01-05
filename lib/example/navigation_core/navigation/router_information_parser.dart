@@ -4,19 +4,22 @@ import 'package:navigation_library_impl/example/navigation_core/model/navigation
 class BookRouteInformationParser extends RouteInformationParser<BookAppNavigationState> {
   @override
   Future<BookAppNavigationState> parseRouteInformation(RouteInformation routeInformation) async {
-    final uri = Uri.parse(routeInformation.location);
-    // Handle '/'
-    if (uri.pathSegments.length == 0) {
-      return BookListState();
-    }
+    final location = routeInformation.location;
+    if (location != null) {
+      final uri = Uri.parse(location);
+      // Handle '/'
+      if (uri.pathSegments.length == 0) {
+        return BookListState();
+      }
 
-    // Handle '/book/:id'
-    if (uri.pathSegments.length == 2) {
-      if (uri.pathSegments[0] != 'book') return NotFoundState();
-      var remaining = uri.pathSegments[1];
-      var id = int.tryParse(remaining);
-      if (id == null) return NotFoundState();
-      return OpenBookState(id);
+      // Handle '/book/:id'
+      if (uri.pathSegments.length == 2) {
+        if (uri.pathSegments[0] != 'book') return NotFoundState();
+        var remaining = uri.pathSegments[1];
+        var id = int.tryParse(remaining);
+        if (id == null) return NotFoundState();
+        return OpenBookState(id);
+      }
     }
 
     // Handle unknown routes

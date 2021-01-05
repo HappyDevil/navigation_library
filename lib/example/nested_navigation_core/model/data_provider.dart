@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class BooksProvider {
   BooksProvider._create();
 
@@ -16,13 +14,13 @@ class BooksProvider {
 }
 
 class Book {
+  Book({
+    required this.id,
+    required this.title,
+    required this.author,
+  });
+
   final int id;
   final String title;
   final String author;
-
-  Book({
-    @required this.id,
-    @required this.title,
-    @required this.author,
-  });
 }

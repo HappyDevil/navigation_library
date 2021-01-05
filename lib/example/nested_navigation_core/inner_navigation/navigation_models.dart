@@ -1,12 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/navigation_models.dart';
-import 'package:navigation_library_impl/navigation_core/base_state.dart';
+import 'package:navigation_library_impl/navigation_core/base_launch_modes.dart';
 
 abstract class InnerNavigationState extends OuterNavigationState {}
 
 class OpenBookState extends InnerNavigationState {
   @override
-  LaunchMode get launchMode => LaunchMode.MoveToTop;
+  LaunchMode get launchMode => MoveToTop();
 
   final int id;
 
@@ -25,7 +24,7 @@ class OpenBookState extends InnerNavigationState {
 
 class BookListState extends InnerNavigationState {
   @override
-  LaunchMode get launchMode => LaunchMode.DropToSingle;
+  LaunchMode get launchMode => DropToSingle();
 
   @override
   bool operator ==(Object other) =>
@@ -37,7 +36,7 @@ class BookListState extends InnerNavigationState {
 
 class InnerNotFoundState extends InnerNavigationState {
   @override
-  LaunchMode get launchMode => LaunchMode.NoHistory;
+  LaunchMode get launchMode => NoHistory();
 
   @override
   bool operator ==(Object other) =>

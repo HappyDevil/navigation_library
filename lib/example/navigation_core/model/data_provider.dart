@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class BooksProvider {
   BooksProvider._create();
 
@@ -7,7 +5,7 @@ class BooksProvider {
 
   final books = List.generate(
     3,
-    (index) => Book(
+        (index) => Book(
       id: index,
       title: index.toString(),
       author: index.toString(),
@@ -16,13 +14,13 @@ class BooksProvider {
 }
 
 class Book {
+  Book({
+    required this.id,
+    required this.title,
+    required this.author,
+  });
+
   final int id;
   final String title;
   final String author;
-
-  Book({
-    @required this.id,
-    @required this.title,
-    @required this.author,
-  });
 }

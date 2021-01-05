@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class BookDetailsScreen extends StatelessWidget {
-  final int book;
-
   BookDetailsScreen({
-    @required this.book,
+    required this.book,
   });
+
+  final int book;
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +16,8 @@ class BookDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (book != null) ...[
-              Text(book.toString(),
-                  style: Theme.of(context).textTheme.headline6),
-              Text(book.toString(),
-                  style: Theme.of(context).textTheme.subtitle1),
-            ],
+            Text(book.toString(), style: Theme.of(context).textTheme.headline6),
+            Text(book.toString(), style: Theme.of(context).textTheme.subtitle1),
           ],
         ),
       ),

@@ -6,6 +6,7 @@ import 'package:navigation_library_impl/example/nested_navigation_core/outer_nav
 import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/pages/outer_not_found_page.dart';
 import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/pages/splash_page.dart';
 import 'package:navigation_library_impl/navigation_core/base_router_delegate.dart';
+import 'package:navigation_library_impl/navigation_core/base_router_delegate_impl.dart';
 
 class OuterRouterDelegate extends ParentBaseRouterDelegate<OuterNavigationState, OuterNavigationEvents> {
   OuterRouterDelegate._create() : super();
@@ -13,23 +14,7 @@ class OuterRouterDelegate extends ParentBaseRouterDelegate<OuterNavigationState,
   static final OpenNavigator navigator = I;
 
   @override
-  @protected
-  List<OuterNavigationState> initState() => [SplashState()];
-
-  @override
-  @protected
-  List<OuterNavigationState> organize(final List<OuterNavigationState> cachedStates) {
-    final lastIndexOfInnerState = cachedStates.lastIndexWhere((e) => e is InnerNavigationState);
-    if (lastIndexOfInnerState != -1) {
-      return cachedStates
-          .asMap()
-          .entries
-          .where((e) => e.key != lastIndexOfInnerState && e.value is InnerNavigationState)
-          .map((e) => (e.value is InnerNavigationState) ? OuterLinkToInnerState() : e.value);
-    } else {
-      return cachedStates;
-    }
-  }
+  List<OuterNavigationState> get initState => [SplashState()];
 
   @override
   @protected
@@ -37,7 +22,7 @@ class OuterRouterDelegate extends ParentBaseRouterDelegate<OuterNavigationState,
     if (event is NavigateToMainPage) return InnerRouterDelegate.initializeState();
     if (event is NavigateToBook) return OpenBookState(event.id);
     if (event is ChangeScreenEvent) return _unresolveIndex(event.newPageIndex);
-    throw UnimplementedError("event type is not supports ${event.runtimeType}");
+    throw UnimplementedError('event type is not supports ${event.runtimeType}');
   }
 
   @override
@@ -45,8 +30,8 @@ class OuterRouterDelegate extends ParentBaseRouterDelegate<OuterNavigationState,
   Page mapStateToPage(OuterNavigationState state) {
     if (state is SplashState) return SplashPage(state);
     if (state is OuterNotFoundState) return OuterNotFoundPage(state);
-    if (state is InnerNavigationState) return MainPage(state);
-    throw UnimplementedError("state type is not supports ${state.runtimeType}");
+    if (state is OuterLinkToInnerState) return MainPage(state as OuterLinkToInnerState); //TODO fix it
+    throw UnimplementedError('state type is not supports ${state.runtimeType}');
   }
 
   InnerNavigationState _unresolveIndex(final int newIndex) {

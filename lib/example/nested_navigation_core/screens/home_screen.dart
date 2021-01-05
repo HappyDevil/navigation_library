@@ -1,48 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:navigation_library_impl/example/nested_navigation_core/inner_navigation/inner_router_delegate.dart';
-import 'package:navigation_library_impl/example/nested_navigation_core/inner_navigation/navigation_models.dart';
-import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/outer_router_delegate.dart';
 import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/navigation_models.dart';
+import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/outer_router_delegate.dart';
 
 class HomeScreen extends StatefulWidget {
-  final InnerNavigationState appState;
+  HomeScreen({required this.outerLinkToInnerState});
 
-  HomeScreen({@required this.appState});
+  final OuterLinkToInnerState outerLinkToInnerState;
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  InnerRouterDelegate _routerDelegate;
-  ChildBackButtonDispatcher _backButtonDispatcher;
+  late final InnerRouterDelegate _routerDelegate;
+  late final ChildBackButtonDispatcher? _backButtonDispatcher;
 
   void initState() {
     super.initState();
-    _routerDelegate = InnerRouterDelegate(widget.appState);
+    _routerDelegate = InnerRouterDelegate(widget.outerLinkToInnerState);
   }
 
   @override
   void didUpdateWidget(covariant HomeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _routerDelegate.navigate(DidUpdateWidgetEvent(oldWidget.appState), withNotify: false);
+    _routerDelegate.didUpdateRouter(oldWidget.outerLinkToInnerState);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Defer back button dispatching to the child router
-    _backButtonDispatcher = Router.of(context).backButtonDispatcher.createChildBackButtonDispatcher();
+    _backButtonDispatcher = Router.of(context).backButtonDispatcher?.createChildBackButtonDispatcher();
   }
 
   @override
   Widget build(BuildContext context) {
-    _backButtonDispatcher.takePriority();
+    _backButtonDispatcher?.takePriority();
 
     return Scaffold(
       body: Router(
         routerDelegate: _routerDelegate,
         backButtonDispatcher: _backButtonDispatcher,
+      ),
+      appBar: AppBar(
+        title: Text('Hello Worlds'),
       ),
       drawer: Center(
         child: Column(

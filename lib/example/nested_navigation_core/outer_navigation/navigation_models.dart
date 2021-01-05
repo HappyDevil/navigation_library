@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:navigation_library_impl/navigation_core/base_launch_modes.dart';
 import 'package:navigation_library_impl/navigation_core/base_state.dart';
 
 //states
@@ -7,7 +8,7 @@ abstract class OuterNavigationState extends NavigationBaseState {}
 
 class SplashState extends OuterNavigationState {
   @override
-  LaunchMode get launchMode => LaunchMode.NoHistory;
+  LaunchMode get launchMode => NoHistory();
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is SplashState && runtimeType == other.runtimeType;
@@ -18,7 +19,7 @@ class SplashState extends OuterNavigationState {
 
 class OuterNotFoundState extends OuterNavigationState {
   @override
-  LaunchMode get launchMode => LaunchMode.NoHistory;
+  LaunchMode get launchMode => NoHistory();
 
   @override
   bool operator ==(Object other) =>
@@ -28,16 +29,19 @@ class OuterNotFoundState extends OuterNavigationState {
   int get hashCode => 0;
 }
 
-class OuterLinkToInnerState extends OuterNavigationState {
-  @override
-  LaunchMode get launchMode => LaunchMode.NoHistory;
+class OuterLinkToInnerState extends ChildNavigationStubState {
+  OuterLinkToInnerState(int startIndex, int endIndex) : super(startIndex, endIndex);
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is OuterLinkToInnerState && runtimeType == other.runtimeType;
+      identical(this, other) ||
+      other is OuterLinkToInnerState &&
+          runtimeType == other.runtimeType &&
+          startIndex == other.startIndex &&
+          endIndex == other.endIndex;
 
   @override
-  int get hashCode => 0;
+  int get hashCode => startIndex.hashCode ^ endIndex.hashCode;
 }
 
 //events
@@ -68,9 +72,9 @@ class ChangeScreenEvent extends OuterNavigationEvents {
 }
 
 class NavigateToBook extends OuterNavigationEvents {
-  final int id;
+  NavigateToBook({required this.id});
 
-  NavigateToBook({@required this.id});
+  final int id;
 
   @override
   String toString() => 'NavigateToBook{id: $id}';

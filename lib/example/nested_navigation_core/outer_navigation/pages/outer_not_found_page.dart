@@ -7,7 +7,7 @@ class OuterNotFoundPage extends BasePage<OuterNotFoundState> {
   OuterNotFoundPage(OuterNotFoundState state) : super(state);
 
   @override
-  Route createRoute(BuildContext context) => MaterialPageRoute(
+  Route createRoute(BuildContext context) => MaterialPageRoute<dynamic>(
         settings: this,
         builder: (BuildContext context) {
           return UnknownScreen();

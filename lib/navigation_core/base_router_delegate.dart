@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'base_interceptor.dart';
 import 'base_state.dart';
 
 abstract class OpenNavigator<E> {
@@ -10,47 +12,18 @@ abstract class OpenNavigator<E> {
 abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends RouterDelegate<S>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<S>
     implements OpenNavigator<E> {
-  String _TAG;
+  BaseRouterDelegate({CompositeStatesInterceptor<S>? statesInterceptor}) {
+    this.statesInterceptor = statesInterceptor ?? defaultInterceptor;
+    _logTag = this.runtimeType.toString();
+  }
+
+  late final String _logTag;
+  @protected
+  late final CompositeStatesInterceptor<S> statesInterceptor;
+  @protected
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
   @protected
-  NavigatorDelegateState get navigatorState;
-
-  @protected
-  set navigatorState(NavigatorDelegateState navigatorDelegateState);
-
-  BaseRouterDelegate() {
-    _TAG = this.runtimeType.toString();
-  }
-
-  @override
-  S get currentConfiguration => navigatorState.lastState;
-
-  @override
-  Widget build(BuildContext context) {
-    _innerLog("build $navigatorState");
-    final states = navigatorState.states;
-    return Navigator(
-      key: navigatorKey,
-      pages: organize(states).map(mapStateToPage).toList(),
-      onPopPage: popPage,
-    );
-  }
-
-  @override
-  @protected
-  Future<void> setNewRoutePath(S state) => _pathUpdated(state);
-
-  @override
-  Future<void> navigate(E event, {bool withNotify = true}) async {
-    _innerLog("navigate event $event");
-    final state = mapEventToState(event);
-    if (state != null) await _pathUpdated(state);
-    if (withNotify) notifyListeners();
-  }
-
-  @protected
-  bool popPage(Route<dynamic> route, dynamic result);
+  CompositeStatesInterceptor<S> get defaultInterceptor;
 
   @protected
   void popLast() {
@@ -60,80 +33,53 @@ abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends Rout
     notifyListeners();
   }
 
+  @override
+  S get currentConfiguration => navigatorState.lastState;
+
+  @override
+  Widget build(BuildContext context) {
+    _innerLog('build $navigatorState');
+    final states = navigatorState.states;
+    return Navigator(
+      key: navigatorKey,
+      pages: statesInterceptor.intercept(states).map(mapStateToPage).whereType<Page>().toList(),
+      onPopPage: popPage,
+    );
+  }
+
+  @override
   @protected
-  Page mapStateToPage(S state);
+  Future<void> setNewRoutePath(S state) => _pathUpdated(state, withNotify: true);
+
+  @override
+  Future<void> navigate(E event, {bool withNotify = true}) async {
+    final state = mapEventToState(event);
+
+    _innerLog('map event($event) To state($state) : notify($withNotify)');
+    if (state != null) await _pathUpdated(state, withNotify: withNotify);
+  }
 
   @protected
-  S mapEventToState(E event);
+  bool popPage(Route<dynamic> route, dynamic result);
 
   @protected
-  List<S> organize(List<S> cachedStates) => cachedStates;
+  NavigatorDelegateState<S> get navigatorState;
 
-  Future<void> _pathUpdated(S state) async {
+  @protected
+  set navigatorState(NavigatorDelegateState<S> navigatorDelegateState);
+
+  @protected
+  Page? mapStateToPage(S state);
+
+  @protected
+  S? mapEventToState(E event);
+
+  Future<void> _pathUpdated(S state, {required bool withNotify}) async {
     navigatorState = navigatorState.clearNoHistory().addNewState(state);
+    if (withNotify) notifyListeners();
   }
 
   void _innerLog(final String message) {
-    log(message, name: _TAG);
+    log(message, name: _logTag);
   }
-}
-
-abstract class ParentBaseRouterDelegate<S extends NavigationBaseState, E> extends BaseRouterDelegate<S, E> {
-  NavigatorDelegateState _navigatorState;
-
-  ParentBaseRouterDelegate() {
-    _navigatorState = NavigatorDelegateState(initState());
-  }
-
-  @protected
-  NavigatorDelegateState get navigatorState => _navigatorState;
-
-  @protected
-  set navigatorState(NavigatorDelegateState navigatorDelegateState) {
-    _navigatorState = navigatorDelegateState;
-  }
-
-  @protected
-  bool popPage(Route<dynamic> route, dynamic result) {
-    if (!route.didPop(result)) {
-      return false;
-    }
-    popLast();
-    return true;
-  }
-
-  List<S> initState();
-}
-
-abstract class ChildBaseRouterDelegate<PS extends NavigationBaseState, S extends PS, E>
-    extends BaseRouterDelegate<S, E> {
-  final BaseRouterDelegate<PS, dynamic> _parentRouterDelegate;
-
-  @protected
-  NavigatorDelegateState get navigatorState => _parentRouterDelegate.navigatorState;
-
-  @protected
-  set navigatorState(NavigatorDelegateState navigatorDelegateState) {
-    _parentRouterDelegate.navigatorState = navigatorDelegateState;
-  }
-
-  ChildBaseRouterDelegate(this._parentRouterDelegate) {
-    final newStates = navigatorState.states;
-    newStates.addAll(initState());
-    navigatorState = navigatorState.copyWith(states: newStates);
-  }
-
-  @override
-  bool popPage(Route route, result) {
-    popLast();
-    return route.didPop(result);
-  }
-
-  @override
-  void notifyListeners() {
-    _parentRouterDelegate.notifyListeners();
-    super.notifyListeners();
-  }
-
-  List<S> initState();
 }
