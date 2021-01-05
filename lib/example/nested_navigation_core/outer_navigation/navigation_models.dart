@@ -3,9 +3,9 @@ import 'package:navigation_library_impl/navigation_core/base_state.dart';
 
 //states
 
-abstract class OuterNavigationState extends NavigationBaseState {}
+mixin OuterNavigationState implements NavigationBaseState {}
 
-class SplashState extends OuterNavigationState {
+class SplashState with OuterNavigationState {
   @override
   LaunchMode get launchMode => NoHistory();
 
@@ -16,7 +16,7 @@ class SplashState extends OuterNavigationState {
   int get hashCode => 0;
 }
 
-class OuterNotFoundState extends OuterNavigationState {
+class OuterNotFoundState with OuterNavigationState {
   @override
   LaunchMode get launchMode => NoHistory();
 
@@ -28,7 +28,7 @@ class OuterNotFoundState extends OuterNavigationState {
   int get hashCode => 0;
 }
 
-class OuterLinkToInnerState extends ChildNavigationStubState {
+class OuterLinkToInnerState extends ChildNavigationStubState with OuterNavigationState {
   OuterLinkToInnerState(int startIndex, int endIndex) : super(startIndex, endIndex);
 
   @override

@@ -30,7 +30,7 @@ class OuterRouterDelegate extends ParentBaseRouterDelegate<OuterNavigationState,
   Page mapStateToPage(OuterNavigationState state) {
     if (state is SplashState) return SplashPage(state);
     if (state is OuterNotFoundState) return OuterNotFoundPage(state);
-    if (state is OuterLinkToInnerState) return MainPage(state as OuterLinkToInnerState); //TODO fix it
+    if (state is OuterLinkToInnerState) return MainPage(state);
     throw UnimplementedError('state type is not supports ${state.runtimeType}');
   }
 

@@ -1,9 +1,9 @@
 import 'package:navigation_library_impl/navigation_core/base_launch_modes.dart';
 import 'package:navigation_library_impl/navigation_core/base_state.dart';
 
-abstract class BookAppNavigationState implements NavigationBaseState {}
+mixin BookAppNavigationState implements NavigationBaseState {}
 
-class NotFoundState extends BookAppNavigationState {
+class NotFoundState with BookAppNavigationState {
   @override
   LaunchMode get launchMode => NoHistory();
 
@@ -15,7 +15,7 @@ class NotFoundState extends BookAppNavigationState {
   int get hashCode => 0;
 }
 
-class BookListState extends BookAppNavigationState {
+class BookListState with BookAppNavigationState {
   @override
   LaunchMode get launchMode => DropToSingle();
 
@@ -27,7 +27,7 @@ class BookListState extends BookAppNavigationState {
   int get hashCode => 0;
 }
 
-class OpenBookState extends BookAppNavigationState {
+class OpenBookState with BookAppNavigationState {
   OpenBookState(this.id);
   final int id;
 

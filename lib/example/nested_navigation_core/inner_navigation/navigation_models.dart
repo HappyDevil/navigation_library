@@ -1,9 +1,9 @@
 import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/navigation_models.dart';
 import 'package:navigation_library_impl/navigation_core/base_launch_modes.dart';
 
-abstract class InnerNavigationState extends OuterNavigationState {}
+mixin InnerNavigationState implements OuterNavigationState {}
 
-class OpenBookState extends InnerNavigationState {
+class OpenBookState with InnerNavigationState {
   OpenBookState(this.id);
 
   @override
@@ -22,7 +22,7 @@ class OpenBookState extends InnerNavigationState {
   int get hashCode => id.hashCode;
 }
 
-class BookListState extends InnerNavigationState {
+class BookListState with InnerNavigationState {
   @override
   LaunchMode get launchMode => DropToSingle();
 
@@ -34,7 +34,7 @@ class BookListState extends InnerNavigationState {
   int get hashCode => 0;
 }
 
-class InnerNotFoundState extends InnerNavigationState {
+class InnerNotFoundState with InnerNavigationState {
   @override
   LaunchMode get launchMode => NoHistory();
 

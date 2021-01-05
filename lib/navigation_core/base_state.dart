@@ -1,15 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:navigation_library_impl/navigation_core/base_launch_modes.dart';
 
-abstract class NavigationBaseState {
+mixin NavigationBaseState {
   LaunchMode get launchMode;
 }
 
-abstract class ChildNavigationStubState extends NavigationBaseState {
+abstract class ChildNavigationStubState implements NavigationBaseState {
   /**
    * Indexes of child navigation three in main navigation stack
    */
   ChildNavigationStubState(this.startIndex, this.endIndex);
+
   final int startIndex;
   final int endIndex;
 
@@ -24,6 +25,7 @@ class NavigatorDelegateState<S extends NavigationBaseState> {
   final List<S> _states;
 
   List<S> get states => _states.toList();
+
   S get lastState => _states.last;
 
   @override
