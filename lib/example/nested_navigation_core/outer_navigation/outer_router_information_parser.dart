@@ -2,10 +2,11 @@ import 'package:flutter/widgets.dart';
 import 'package:navigation_library_impl/example/nested_navigation_core/inner_navigation/navigation_models.dart';
 import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/navigation_models.dart';
 import 'package:collection/collection.dart';
+import 'package:navigation_library_impl/navigation_core/base_information_parser.dart';
 
-class OuterRouteInformationParser extends RouteInformationParser<OuterNavigationState> {
+class OuterRouteInformationParser extends BaseInformationParser<OuterNavigationState> {
   @override
-  Future<OuterNavigationState> parseRouteInformation(RouteInformation routeInformation) async {
+  Future<OuterNavigationState> parseRouteInformationInner(RouteInformation routeInformation) async {
     final location = routeInformation.location;
 
     if (location != null) {
@@ -30,7 +31,7 @@ class OuterRouteInformationParser extends RouteInformationParser<OuterNavigation
   }
 
   @override
-  RouteInformation restoreRouteInformation(OuterNavigationState state) {
+  RouteInformation restoreRouteInformationInner(OuterNavigationState state) {
     if (state is SplashState) {
       return RouteInformation(location: '/');
     }

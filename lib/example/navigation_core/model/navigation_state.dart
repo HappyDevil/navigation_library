@@ -1,5 +1,5 @@
-import 'package:navigation_library_impl/navigation_core/base_launch_modes.dart';
-import 'package:navigation_library_impl/navigation_core/base_state.dart';
+import 'package:navigation_library_impl/navigation_core/model/base_launch_modes.dart';
+import 'package:navigation_library_impl/navigation_core/model/base_state.dart';
 
 mixin BookAppNavigationState implements NavigationBaseState {}
 
@@ -13,6 +13,11 @@ class NotFoundState with BookAppNavigationState {
 
   @override
   int get hashCode => 0;
+
+  @override
+  String toString() {
+    return 'NotFoundState{}';
+  }
 }
 
 class BookListState with BookAppNavigationState {
@@ -25,6 +30,11 @@ class BookListState with BookAppNavigationState {
 
   @override
   int get hashCode => 0;
+
+  @override
+  String toString() {
+    return 'BookListState{}';
+  }
 }
 
 class OpenBookState with BookAppNavigationState {

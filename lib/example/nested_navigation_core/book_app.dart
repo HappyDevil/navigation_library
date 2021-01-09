@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/outer_router_delegate.dart';
+import 'package:navigation_library_impl/example/nested_navigation_core/fake_ioc_container.dart';
 import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/outer_router_information_parser.dart';
 
 class NestedNavigationApp extends StatelessWidget {
-  final OuterRouterDelegate _routerDelegate = OuterRouterDelegate.I;
   final OuterRouteInformationParser _routeInformationParser = OuterRouteInformationParser();
-  static RouteInformationProvider? routeInformationProvider;
 
   @override
   Widget build(BuildContext context) {
-    final materialApp = MaterialApp.router(
+    return MaterialApp.router(
       title: 'NestedNavigationApp',
-      routerDelegate: _routerDelegate,
+      routerDelegate: FakeIcoContainer.parentRouter,
       routeInformationParser: _routeInformationParser,
     );
-    routeInformationProvider = materialApp.routeInformationProvider;
-    return materialApp;
   }
 }

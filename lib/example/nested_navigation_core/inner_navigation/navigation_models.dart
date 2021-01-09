@@ -1,5 +1,5 @@
 import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/navigation_models.dart';
-import 'package:navigation_library_impl/navigation_core/base_launch_modes.dart';
+import 'package:navigation_library_impl/navigation_core/model/base_launch_modes.dart';
 
 mixin InnerNavigationState implements OuterNavigationState {}
 
@@ -32,6 +32,11 @@ class BookListState with InnerNavigationState {
 
   @override
   int get hashCode => 0;
+
+  @override
+  String toString() {
+    return 'BookListState{}';
+  }
 }
 
 class InnerNotFoundState with InnerNavigationState {
@@ -50,18 +55,37 @@ class InnerNotFoundState with InnerNavigationState {
 
 abstract class InnerNavigationEvents {}
 
-class DidUpdateWidgetEvent extends InnerNavigationEvents {
-  DidUpdateWidgetEvent(this.innerNavigationState);
+class NavigateToBook extends InnerNavigationEvents {
+  NavigateToBook({required this.id});
 
-  final InnerNavigationState innerNavigationState;
+  final int id;
+
+  @override
+  String toString() => 'NavigateToBook{id: $id}';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is NavigateToBook && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+class ChangeScreenEvent extends InnerNavigationEvents {
+  ChangeScreenEvent(this.newPageIndex);
+
+  final int newPageIndex;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DidUpdateWidgetEvent &&
-          runtimeType == other.runtimeType &&
-          innerNavigationState == other.innerNavigationState;
+      other is ChangeScreenEvent && runtimeType == other.runtimeType && newPageIndex == other.newPageIndex;
 
   @override
-  int get hashCode => innerNavigationState.hashCode;
+  int get hashCode => newPageIndex.hashCode;
+
+  @override
+  String toString() {
+    return 'ChangeScreenEvent{newPageIndex: $newPageIndex}';
+  }
 }

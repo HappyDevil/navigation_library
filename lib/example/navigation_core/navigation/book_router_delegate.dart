@@ -4,7 +4,8 @@ import 'package:navigation_library_impl/example/navigation_core/model/navigation
 import 'package:navigation_library_impl/example/navigation_core/navigation/pages/book_detail_page.dart';
 import 'package:navigation_library_impl/example/navigation_core/navigation/pages/book_list_page.dart';
 import 'package:navigation_library_impl/example/navigation_core/navigation/pages/not_found_page.dart';
-import 'package:navigation_library_impl/navigation_core/base_router_delegate_impl.dart';
+import 'package:navigation_library_impl/navigation_core/delegate/base_router_delegate_impl.dart';
+import 'package:navigation_library_impl/navigation_core/interceptor/base_interceptor.dart';
 
 class BookRouterDelegate extends ParentBaseRouterDelegate<BookAppNavigationState, BookAppNavigationEvent> {
   BookRouterDelegate._create() : super();
@@ -22,8 +23,11 @@ class BookRouterDelegate extends ParentBaseRouterDelegate<BookAppNavigationState
   List<BookAppNavigationState> get initState => [BookListState()];
 
   @override
-  BookAppNavigationState mapEventToState(final BookAppNavigationEvent event) {
+  Future<BookAppNavigationState> mapEventToState(final BookAppNavigationEvent event) async {
     if (event is NavigateToBook) return OpenBookState(event.id);
     throw UnimplementedError('event type is not supports ${event.runtimeType}');
   }
+
+  @override
+  CompositeStatesInterceptor<BookAppNavigationState> get statesInterceptor => CompositeStatesInterceptor.EMPTY();
 }

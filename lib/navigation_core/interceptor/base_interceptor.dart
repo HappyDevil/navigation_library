@@ -38,4 +38,6 @@ class CompositeStatesInterceptor<S> implements StatesInterceptor<S> {
     interceptorsCopy.add(interceptor);
     return copyWith(interceptors: interceptorsCopy);
   }
+
+  static CompositeStatesInterceptor<S> EMPTY<S>() => CompositeStatesInterceptor<S>(interceptors: const []);
 }

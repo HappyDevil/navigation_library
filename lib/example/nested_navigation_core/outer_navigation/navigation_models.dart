@@ -1,5 +1,5 @@
-import 'package:navigation_library_impl/navigation_core/base_launch_modes.dart';
-import 'package:navigation_library_impl/navigation_core/base_state.dart';
+import 'package:navigation_library_impl/navigation_core/model/base_launch_modes.dart';
+import 'package:navigation_library_impl/navigation_core/model/base_state.dart';
 
 //states
 
@@ -33,14 +33,28 @@ class OuterLinkToInnerState extends ChildNavigationStubState with OuterNavigatio
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is OuterLinkToInnerState &&
-          runtimeType == other.runtimeType &&
-          startIndex == other.startIndex &&
-          endIndex == other.endIndex;
+      identical(this, other) || super == other && other is OuterLinkToInnerState && runtimeType == other.runtimeType;
 
   @override
-  int get hashCode => startIndex.hashCode ^ endIndex.hashCode;
+  int get hashCode => super.hashCode;
+
+  @override
+  ChildNavigationStubState withNewIndex({int? startIndex, int? endIndex}) {
+    if ((startIndex == null || identical(startIndex, this.startIndex)) &&
+        (endIndex == null || identical(endIndex, this.endIndex))) {
+      return this;
+    }
+
+    return new OuterLinkToInnerState(
+      startIndex ?? this.startIndex,
+      endIndex ?? this.endIndex,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'OuterLinkToInnerState{startIndex: $startIndex, endIndex: $endIndex}';
+  }
 }
 
 //events
@@ -54,34 +68,4 @@ class NavigateToMainPage extends OuterNavigationEvents {
 
   @override
   int get hashCode => 0;
-}
-
-class ChangeScreenEvent extends OuterNavigationEvents {
-  ChangeScreenEvent(this.newPageIndex);
-
-  final int newPageIndex;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ChangeScreenEvent && runtimeType == other.runtimeType && newPageIndex == other.newPageIndex;
-
-  @override
-  int get hashCode => newPageIndex.hashCode;
-}
-
-class NavigateToBook extends OuterNavigationEvents {
-  NavigateToBook({required this.id});
-
-  final int id;
-
-  @override
-  String toString() => 'NavigateToBook{id: $id}';
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) || other is NavigateToBook && runtimeType == other.runtimeType && id == other.id;
-
-  @override
-  int get hashCode => id.hashCode;
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:navigation_library_impl/example/navigation_core/model/navigation_state.dart';
+import 'package:navigation_library_impl/navigation_core/base_information_parser.dart';
 
-class BookRouteInformationParser extends RouteInformationParser<BookAppNavigationState> {
+class BookRouteInformationParser extends BaseInformationParser<BookAppNavigationState> {
   @override
-  Future<BookAppNavigationState> parseRouteInformation(RouteInformation routeInformation) async {
+  Future<BookAppNavigationState> parseRouteInformationInner(RouteInformation routeInformation) async {
     final location = routeInformation.location;
     if (location != null) {
       final uri = Uri.parse(location);
@@ -27,7 +28,7 @@ class BookRouteInformationParser extends RouteInformationParser<BookAppNavigatio
   }
 
   @override
-  RouteInformation restoreRouteInformation(BookAppNavigationState path) {
+  RouteInformation restoreRouteInformationInner(BookAppNavigationState path) {
     if (path is BookListState) {
       return RouteInformation(location: '/');
     }

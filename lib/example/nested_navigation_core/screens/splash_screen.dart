@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:navigation_library_impl/example/nested_navigation_core/fake_ioc_container.dart';
 import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/navigation_models.dart';
-import 'package:navigation_library_impl/example/nested_navigation_core/outer_navigation/outer_router_delegate.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -11,7 +11,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future<void>.delayed(Duration(seconds: 3)).then((value) => OuterRouterDelegate.I.navigate(NavigateToMainPage()));
+    Future<void>.delayed(Duration(seconds: 3))
+        .then((value) => FakeIcoContainer.outerNavigator.navigate(NavigateToMainPage()));
   }
 
   @override
