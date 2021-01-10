@@ -23,6 +23,7 @@ abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends Rout
     final states = navigatorState.states;
     states.removeLast();
     navigatorState = navigatorState.copyWith(states: states);
+    notifyListeners();
   }
 
   /**

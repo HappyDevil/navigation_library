@@ -14,6 +14,8 @@ abstract class ChildNavigationStubState with NavigationBaseState {
   final int startIndex;
   final int endIndex;
 
+  int get length => (endIndex - startIndex) + 1;
+
   @override
   @nonVirtual
   LaunchMode get launchMode => VirtualState();
