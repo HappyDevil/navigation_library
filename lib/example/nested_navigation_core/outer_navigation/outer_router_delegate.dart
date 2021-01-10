@@ -25,8 +25,8 @@ class OuterRouterDelegate extends ParentBaseRouterDelegate<OuterNavigationState,
 
   @override
   @protected
-  Future<OuterNavigationState> mapEventToState(final OuterNavigationEvents event) async {
-    if (event is NavigateToMainPage) return InnerRouterDelegate.initializeState();
+  Future<List<OuterNavigationState>> mapEventToStates(final OuterNavigationEvents event) async {
+    if (event is NavigateToMainPage) return [InnerRouterDelegate.initializeState()];
     throw UnimplementedError('event type is not supports ${event.runtimeType}');
   }
 

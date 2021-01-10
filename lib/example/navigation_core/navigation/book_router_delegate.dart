@@ -23,8 +23,8 @@ class BookRouterDelegate extends ParentBaseRouterDelegate<BookAppNavigationState
   List<BookAppNavigationState> get initState => [BookListState()];
 
   @override
-  Future<BookAppNavigationState> mapEventToState(final BookAppNavigationEvent event) async {
-    if (event is NavigateToBook) return OpenBookState(event.id);
+  Future<List<BookAppNavigationState>> mapEventToStates(final BookAppNavigationEvent event) async {
+    if (event is NavigateToBook) return [OpenBookState(event.id)];
     throw UnimplementedError('event type is not supports ${event.runtimeType}');
   }
 

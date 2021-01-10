@@ -26,16 +26,6 @@ abstract class ParentBaseRouterDelegate<S extends NavigationBaseState, E> extend
 
   @protected
   List<S> get initState;
-
-  @protected
-  @mustCallSuper
-  bool innerPopPage(Route<dynamic> route, dynamic result) {
-    if (!route.didPop(result)) {
-      return false;
-    }
-    popLast();
-    return true;
-  }
 }
 
 /**
@@ -56,11 +46,6 @@ abstract class ChildBaseRouterDelegate<PS extends NavigationBaseState, CS extend
     _rebuildInnerInterceptor();
   }
 
-  void _rebuildInnerInterceptor() {
-    _innerInterceptor =
-        CompositeStatesInterceptor<PS>(interceptors: [ChildStateCleaner<PS, CS>(_childNavigationStubState)]);
-  }
-
   final ParentBaseRouterDelegate<PS, dynamic> parentRouterDelegate;
   ChildNavigationStubState _childNavigationStubState;
   late CompositeStatesInterceptor<PS> _innerInterceptor;
@@ -71,6 +56,12 @@ abstract class ChildBaseRouterDelegate<PS extends NavigationBaseState, CS extend
   @protected
   @nonVirtual
   NavigatorDelegateState<PS> get navigatorState => parentRouterDelegate.navigatorState;
+
+  @protected
+  @nonVirtual
+  set navigatorState(NavigatorDelegateState<PS> navigatorDelegateState) {
+    parentRouterDelegate.navigatorState = navigatorDelegateState;
+  }
 
   /**
    * Inner navigation must return null current configuration because it routerProvider and routerParser are null
@@ -88,16 +79,15 @@ abstract class ChildBaseRouterDelegate<PS extends NavigationBaseState, CS extend
   @protected
   CompositeStatesInterceptor<PS> get statesInterceptor => _innerInterceptor;
 
+  void _rebuildInnerInterceptor() {
+    _innerInterceptor =
+        CompositeStatesInterceptor<PS>(interceptors: [ChildStateCleaner<PS, CS>(_childNavigationStubState)]);
+  }
+
   @override
   @nonVirtual
   Future<void> setNewRoutePath(PS state) {
     throw StateError("child delegate can't parse routes!");
-  }
-
-  @protected
-  @nonVirtual
-  set navigatorState(NavigatorDelegateState<PS> navigatorDelegateState) {
-    parentRouterDelegate.navigatorState = navigatorDelegateState;
   }
 
   @override
@@ -109,13 +99,6 @@ abstract class ChildBaseRouterDelegate<PS extends NavigationBaseState, CS extend
       logWithTag('Not child type state - $state, was processed with child router delegate', logLevel: Level.warning);
       return null;
     }
-  }
-
-  @override
-  @mustCallSuper
-  bool innerPopPage(Route route, dynamic result) {
-    popLast();
-    return route.didPop(result);
   }
 
   @override

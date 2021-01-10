@@ -72,6 +72,10 @@ class NavigatorDelegateState<S extends NavigationBaseState> {
   NavigatorDelegateState<S> clearNoHistory() =>
       copyWith(states: _states.where((e) => !(e.launchMode is NoHistory)).toList());
 
+  NavigatorDelegateState<S> addNewStates(List<S> states) {
+    return states.fold(this, (delegateState, s) => delegateState.addNewState(s));
+  }
+
   NavigatorDelegateState<S> addNewState(S state) {
     final launchMode = state.launchMode;
 

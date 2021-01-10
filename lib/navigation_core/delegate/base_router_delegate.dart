@@ -6,7 +6,8 @@ import '../interceptor/base_interceptor.dart';
 import '../model/base_state.dart';
 
 abstract class OpenNavigator<E> {
-  Future<void> navigate(E event, {final bool withNotify = true});
+  Future<void> navigate(E event);
+  bool popPage(Route<dynamic> route, dynamic result);
 }
 
 abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends RouterDelegate<S>
@@ -21,9 +22,11 @@ abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends Rout
   @protected
   void popLast() {
     final states = navigatorState.states;
-    states.removeLast();
-    navigatorState = navigatorState.copyWith(states: states);
-    notifyListeners();
+    if (states.isNotEmpty) {
+      states.removeLast();
+      navigatorState = navigatorState.copyWith(states: states);
+      notifyListeners();
+    }
   }
 
   /**
@@ -55,26 +58,26 @@ abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends Rout
   @override
   @protected
   Future<void> setNewRoutePath(S state) {
-    logWithTag('New route path generate new state($state)');
-    return _pathUpdated(state, withNotify: true);
+    logWithTag('New route path generate new state $state');
+    return _addNewState(state);
   }
 
   @override
-  Future<void> navigate(E event, {bool withNotify = true}) async {
-    final state = await mapEventToState(event);
-    logWithTag('map event($event) To state($state) : notify($withNotify)');
-    if (state != null) await _pathUpdated(state, withNotify: withNotify);
+  Future<void> navigate(E event) async {
+    final states = await mapEventToStates(event);
+    logWithTag('map event($event) To states $states');
+    if (states != null) {
+      await _addNewStates(states);
+    }
   }
 
+  @override
   @protected
-  @nonVirtual
   bool popPage(Route<dynamic> route, dynamic result) {
     logWithTag('popPage with result $result from route $route');
-    return innerPopPage(route, result);
+    popLast();
+    return route.didPop(result);
   }
-
-  @protected
-  bool innerPopPage(Route<dynamic> route, dynamic result);
 
   @protected
   NavigatorDelegateState<S> get navigatorState;
@@ -86,10 +89,21 @@ abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends Rout
   Page? mapStateToPage(S state);
 
   @protected
-  Future<S?> mapEventToState(E event);
+  Future<List<S>?> mapEventToStates(E event);
 
-  Future<void> _pathUpdated(S state, {required bool withNotify}) async {
-    navigatorState = navigatorState.clearNoHistory().addNewState(state);
-    if (withNotify) notifyListeners();
+  Future<void> _addNewState(S state) async {
+    final newNavigatorState = navigatorState.clearNoHistory().addNewState(state);
+    if (navigatorState != newNavigatorState) {
+      navigatorState = newNavigatorState;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _addNewStates(List<S> states) async {
+    final newNavigatorState = navigatorState.clearNoHistory().addNewStates(states);
+    if (navigatorState != newNavigatorState) {
+      navigatorState = newNavigatorState;
+      notifyListeners();
+    }
   }
 }

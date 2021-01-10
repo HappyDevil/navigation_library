@@ -19,9 +19,9 @@ class InnerRouterDelegate
   static InnerNavigationState initializeState() => BookListState();
 
   @override
-  Future<InnerNavigationState> mapEventToState(final InnerNavigationEvents event) async {
-    if (event is NavigateToBook) return OpenBookState(event.id);
-    if (event is ChangeScreenEvent) return _unresolveIndex(event.newPageIndex);
+  Future<List<InnerNavigationState>> mapEventToStates(final InnerNavigationEvents event) async {
+    if (event is NavigateToBook) return [OpenBookState(event.id)];
+    if (event is ChangeScreenEvent) return [_unresolveIndex(event.newPageIndex)];
     throw UnimplementedError('event type is not supported ${event.runtimeType}');
   }
 

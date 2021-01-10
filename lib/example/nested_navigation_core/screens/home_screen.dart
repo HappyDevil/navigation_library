@@ -50,9 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Hello Worlds'),
         leading: (widget.outerLinkToInnerState.length > 1)
             ? BackButton(
-                onPressed: () {
-                  _routerDelegate.popRoute();
-                },
+                onPressed: () => _routerDelegate.popRoute(),
               )
             : null,
       ),
