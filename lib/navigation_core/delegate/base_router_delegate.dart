@@ -1,33 +1,28 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:navigation_library_impl/navigation_core/delegate/open_navigator.dart';
+import 'package:navigation_library_impl/navigation_core/model/result_model.dart';
 import 'package:navigation_library_impl/navigation_core/navigator_infrastructure.dart';
 
 import '../interceptor/base_interceptor.dart';
 import '../model/base_state.dart';
 
-abstract class OpenNavigator<E> {
-  Future<void> navigate(E event);
-  bool popPage(Route<dynamic> route, dynamic result);
-}
-
 abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends RouterDelegate<S>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<S>, NavigatorInfrastructureMixin
     implements OpenNavigator<E> {
   @protected
-  CompositeStatesInterceptor<S> get statesInterceptor;
-
-  @protected
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @protected
-  void popLast() {
-    final states = navigatorState.states;
-    if (states.isNotEmpty) {
-      states.removeLast();
-      navigatorState = navigatorState.copyWith(states: states);
-      notifyListeners();
-    }
-  }
+  final StreamController<ResultModel> resultsController = StreamController.broadcast();
+
+  @override
+  Stream<ResultModel> get results => resultsController.stream;
+
+  @override
+  Stream<ResultModel> resultsByCode(final String code) => resultsController.stream.where((r) => r.resultCode == code);
 
   /**
    * Return the last navigation state of navigation
@@ -41,6 +36,16 @@ abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends Rout
   @override
   @protected
   S? get currentConfiguration => lastState;
+
+  @protected
+  void popLast() {
+    final states = navigatorState.states;
+    if (states.isNotEmpty) {
+      states.removeLast();
+      navigatorState = navigatorState.copyWith(states: states);
+      notifyListeners();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,25 +76,30 @@ abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends Rout
     }
   }
 
-  @override
   @protected
   bool popPage(Route<dynamic> route, dynamic result) {
     logWithTag('popPage with result $result from route $route');
     popLast();
+    if (result is ResultModel) {
+      resultsController.add(result);
+    }
     return route.didPop(result);
   }
 
-  @protected
-  NavigatorDelegateState<S> get navigatorState;
+  /**
+   * Use [pop] method instead
+   * */
+  @override
+  @deprecated
+  Future<bool> popRoute() => super.popRoute();
 
-  @protected
-  set navigatorState(NavigatorDelegateState<S> navigatorDelegateState);
-
-  @protected
-  Page? mapStateToPage(S state);
-
-  @protected
-  Future<List<S>?> mapEventToStates(E event);
+  @override
+  bool pop({ResultModel? result}) {
+    final NavigatorState? navigator = navigatorKey.currentState;
+    if (navigator == null || !navigator.canPop()) return false;
+    navigator.pop(result);
+    return true;
+  }
 
   Future<void> _addNewState(S state) async {
     final newNavigatorState = navigatorState.clearNoHistory().addNewState(state);
@@ -106,4 +116,19 @@ abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends Rout
       notifyListeners();
     }
   }
+
+  @protected
+  CompositeStatesInterceptor<S> get statesInterceptor;
+
+  @protected
+  NavigatorDelegateState<S> get navigatorState;
+
+  @protected
+  set navigatorState(NavigatorDelegateState<S> navigatorDelegateState);
+
+  @protected
+  Page? mapStateToPage(S state);
+
+  @protected
+  Future<List<S>?> mapEventToStates(E event);
 }

@@ -50,7 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('Hello Worlds'),
         leading: (widget.outerLinkToInnerState.length > 1)
             ? BackButton(
-                onPressed: () => _routerDelegate.popRoute(),
+                // In Widget that create a Router you need use defined child router instead of NavigatorPop.of
+                onPressed: () => _routerDelegate.pop(),
               )
             : null,
       ),

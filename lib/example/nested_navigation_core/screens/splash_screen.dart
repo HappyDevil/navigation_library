@@ -12,7 +12,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future<void>.delayed(Duration(seconds: 3))
-        .then((value) => FakeIcoContainer.outerNavigator.navigate(NavigateToMainPage()));
+        .then<void>((value) => FakeIcoContainer.outerNavigator.navigate(NavigateToMainPage()));
   }
 
   @override

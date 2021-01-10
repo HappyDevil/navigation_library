@@ -1,5 +1,7 @@
 abstract class LaunchMode {}
 
+class Default extends LaunchMode {}
+
 class MoveToTop extends LaunchMode {}
 
 class DropToSingle extends LaunchMode {}
