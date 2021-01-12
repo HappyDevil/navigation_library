@@ -22,7 +22,7 @@ class NotFoundState with BookAppNavigationState {
 
 class BookListState with BookAppNavigationState {
   @override
-  LaunchMode get launchMode => DropToSingle();
+  LaunchMode get launchMode => EntryToTop();
 
   @override
   bool operator ==(Object other) =>
@@ -43,7 +43,7 @@ class OpenBookState with BookAppNavigationState {
   final int id;
 
   @override
-  LaunchMode get launchMode => MoveToTop();
+  LaunchMode get launchMode => Single();
 
   @override
   bool operator ==(Object other) =>
@@ -60,7 +60,7 @@ class OpenBookState with BookAppNavigationState {
 
 class EnterValueState with BookAppNavigationState {
   @override
-  LaunchMode get launchMode => MoveToTop();
+  LaunchMode get launchMode => Single();
 
   @override
   bool operator ==(Object other) =>

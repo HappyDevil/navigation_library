@@ -80,9 +80,9 @@ class NavigatorDelegateState<S extends NavigationBaseState> {
     final launchMode = state.launchMode;
 
     List<S>? newStates;
-    if (launchMode is MoveToTop) {
+    if (launchMode is Single) {
       newStates = _moveToTop(state);
-    } else if (launchMode is DropToSingle) {
+    } else if (launchMode is EntryToTop) {
       newStates = _dropToSingle(state);
     } else if (launchMode is NoHistory) {
       newStates = _noHistory(state);
