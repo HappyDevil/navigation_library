@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:navigation_library_impl/navigation_core/model/base_launch_modes.dart';
 
+mixin NavigationBaseEvent {}
+
 mixin NavigationBaseState {
   LaunchMode get launchMode;
 }
@@ -18,7 +20,7 @@ abstract class ChildNavigationStubState with NavigationBaseState {
 
   @override
   @nonVirtual
-  LaunchMode get launchMode => VirtualState();
+  LaunchMode get launchMode => VirtualStateMode();
 
   ChildNavigationStubState withNewIndex({
     int? startIndex,
@@ -35,83 +37,4 @@ abstract class ChildNavigationStubState with NavigationBaseState {
 
   @override
   int get hashCode => startIndex.hashCode ^ endIndex.hashCode;
-}
-
-class NavigatorDelegateState<S extends NavigationBaseState> {
-  NavigatorDelegateState({List<S> initStates = const []}) : _states = initStates.toList();
-
-  final List<S> _states;
-
-  List<S> get states => _states.toList();
-
-  S get lastState => _states.last;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is NavigatorDelegateState && runtimeType == other.runtimeType && _states == other._states;
-
-  @override
-  int get hashCode => _states.hashCode;
-
-  @override
-  String toString() {
-    return 'NavigatorDelegateState{_states: $_states}';
-  }
-
-  NavigatorDelegateState<S> copyWith({
-    List<S>? states,
-  }) {
-    if ((states == null || identical(states, this._states))) {
-      return this;
-    }
-
-    return NavigatorDelegateState(initStates: states);
-  }
-
-  NavigatorDelegateState<S> clearNoHistory() =>
-      copyWith(states: _states.where((e) => !(e.launchMode is NoHistory)).toList());
-
-  NavigatorDelegateState<S> addNewStates(List<S> states) {
-    return states.fold(this, (delegateState, s) => delegateState.addNewState(s));
-  }
-
-  NavigatorDelegateState<S> addNewState(S state) {
-    final launchMode = state.launchMode;
-
-    List<S>? newStates;
-    if (launchMode is Single) {
-      newStates = _moveToTop(state);
-    } else if (launchMode is EntryToTop) {
-      newStates = _dropToSingle(state);
-    } else if (launchMode is NoHistory) {
-      newStates = _noHistory(state);
-    }
-
-    return copyWith(states: newStates);
-  }
-
-  List<S> _moveToTop(S state) {
-    final newStates = _states.where((e) => e != state).toList();
-    newStates.add(state);
-    return newStates;
-  }
-
-  List<S> _dropToSingle(S path) {
-    final lastIndex = _states.indexWhere((e) => e == path);
-
-    if (lastIndex >= 0) {
-      return _states.sublist(0, lastIndex + 1);
-    } else {
-      final newStates = _states.toList();
-      newStates.add(path);
-      return newStates;
-    }
-  }
-
-  List<S> _noHistory(S path) {
-    final newStates = _states.toList();
-    newStates.add(path);
-    return newStates;
-  }
 }

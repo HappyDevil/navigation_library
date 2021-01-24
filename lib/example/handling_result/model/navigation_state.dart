@@ -5,7 +5,7 @@ mixin BookAppNavigationState implements NavigationBaseState {}
 
 class NotFoundState with BookAppNavigationState {
   @override
-  LaunchMode get launchMode => NoHistory();
+  LaunchMode get launchMode => NoHistoryMode();
 
   @override
   bool operator ==(Object other) =>
@@ -22,7 +22,7 @@ class NotFoundState with BookAppNavigationState {
 
 class BookListState with BookAppNavigationState {
   @override
-  LaunchMode get launchMode => EntryToTop();
+  LaunchMode get launchMode => SingleTopMode();
 
   @override
   bool operator ==(Object other) =>
@@ -43,7 +43,7 @@ class OpenBookState with BookAppNavigationState {
   final int id;
 
   @override
-  LaunchMode get launchMode => Single();
+  LaunchMode get launchMode => SingleMode();
 
   @override
   bool operator ==(Object other) =>
@@ -60,7 +60,7 @@ class OpenBookState with BookAppNavigationState {
 
 class EnterValueState with BookAppNavigationState {
   @override
-  LaunchMode get launchMode => Single();
+  LaunchMode get launchMode => SingleMode();
 
   @override
   bool operator ==(Object other) =>

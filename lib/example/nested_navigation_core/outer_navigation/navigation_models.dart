@@ -7,7 +7,7 @@ mixin OuterNavigationState implements NavigationBaseState {}
 
 class SplashState with OuterNavigationState {
   @override
-  LaunchMode get launchMode => NoHistory();
+  LaunchMode get launchMode => NoHistoryMode();
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is SplashState && runtimeType == other.runtimeType;
@@ -18,7 +18,7 @@ class SplashState with OuterNavigationState {
 
 class OuterNotFoundState with OuterNavigationState {
   @override
-  LaunchMode get launchMode => NoHistory();
+  LaunchMode get launchMode => NoHistoryMode();
 
   @override
   bool operator ==(Object other) =>

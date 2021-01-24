@@ -3,20 +3,22 @@ component RouteInformationProvider
 component BaseInformationParser
 actor Program
 component BaseRouterDelegate {
-    component RouteStateInterceptor
     component NavigationReducer
-    component StackBuilder
     component StatesVirtualizer
+    component RouteStackMerger
     component Router
 }
 
 
 RouteInformationProvider --> BaseInformationParser : path: RouteInformation
-BaseInformationParser-->  RouteStateInterceptor : pathState: State
-RouteStateInterceptor --> StackBuilder: newStates: List<State>
+BaseInformationParser --> RouteInformationProvider #blue : path: RouteInformation
+BaseRouterDelegate --> BaseInformationParser #blue : stack: StatesStack
+BaseInformationParser --> RouteStackMerger : stack: StatesStack
+RouteStackMerger --> StatesVirtualizer : stack: StatesStack
 Program --> NavigationReducer : event: Event
-NavigationReducer --> RouteStateInterceptor : newStates: List<State>
-StackBuilder --> StatesVirtualizer : allStates: List<State>
+Program --> BaseRouterDelegate : pop
+NavigationReducer --> StatesVirtualizer : stack: StatesStack
+NavigationReducer --> NavigationReducer : stack: StatesStack
 StatesVirtualizer --> Router : resultStates: List<State>
 
 

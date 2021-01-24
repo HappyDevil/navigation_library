@@ -7,7 +7,7 @@ class OpenBookState with InnerNavigationState {
   OpenBookState(this.id);
 
   @override
-  LaunchMode get launchMode => Single();
+  LaunchMode get launchMode => SingleMode();
 
   final int id;
 
@@ -24,7 +24,7 @@ class OpenBookState with InnerNavigationState {
 
 class BookListState with InnerNavigationState {
   @override
-  LaunchMode get launchMode => EntryToTop();
+  LaunchMode get launchMode => SingleTopMode();
 
   @override
   bool operator ==(Object other) =>
@@ -41,7 +41,7 @@ class BookListState with InnerNavigationState {
 
 class InnerNotFoundState with InnerNavigationState {
   @override
-  LaunchMode get launchMode => NoHistory();
+  LaunchMode get launchMode => NoHistoryMode();
 
   @override
   bool operator ==(Object other) =>

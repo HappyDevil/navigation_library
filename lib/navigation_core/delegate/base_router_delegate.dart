@@ -3,15 +3,25 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:navigation_library_impl/navigation_core/delegate/open_navigator.dart';
+import 'package:navigation_library_impl/navigation_core/domain/navigation_stack.dart';
+import 'package:navigation_library_impl/navigation_core/domain/stack_builder/stack_builder.dart';
 import 'package:navigation_library_impl/navigation_core/model/result_model.dart';
 import 'package:navigation_library_impl/navigation_core/navigator_infrastructure.dart';
 
 import '../interceptor/base_interceptor.dart';
 import '../model/base_state.dart';
 
-abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends RouterDelegate<S>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin<S>, NavigatorInfrastructureMixin
+abstract class BaseRouterDelegate<S extends NavigationBaseState, E extends NavigationBaseEvent>
+    extends RouterDelegate<NavigationStack<S>>
+    with PopNavigatorRouterDelegateMixin<NavigationStack<S>>, NavigatorInfrastructureMixin
     implements OpenNavigator<E> {
+  BaseRouterDelegate(List<S> initStates)
+      : navigationStackContainer =
+            NavigationStackContainer(NavigationStackBuilder<S>.defaultBuilder(states: initStates).build());
+
+  @protected
+  NavigationStackContainer<S> navigationStackContainer;
+
   @protected
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -25,65 +35,41 @@ abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends Rout
   Stream<ResultModel> resultsByCode(final String code) => resultsController.stream.where((r) => r.resultCode == code);
 
   /**
-   * Return the last navigation state of navigation
-   * In [ChildBaseRouterDelegate] returns only inner navigation states
-   * */
-  S get lastState => navigatorState.lastState;
-
-  /**
    * This is inner function for navigation logic, if you need to process last state of navigation use [lastState]
    * */
   @override
   @protected
-  S? get currentConfiguration => lastState;
-
-  @protected
-  void popLast() {
-    final states = navigatorState.states;
-    if (states.isNotEmpty) {
-      states.removeLast();
-      navigatorState = navigatorState.copyWith(states: states);
-      notifyListeners();
-    }
-  }
+  NavigationStack<S> get currentConfiguration => navigationStackContainer.navigationStack;
 
   @override
   Widget build(BuildContext context) {
-    final states = navigatorState.states;
-    final processedStates = statesInterceptor.intercept(states);
-    final pages = processedStates.map(mapStateToPage).whereType<Page>().toList();
-    logWithTag('build $states after processing $processedStates mapped to $pages');
-    return Navigator(
-      key: navigatorKey,
-      pages: pages,
-      onPopPage: popPage,
-    );
+    return StreamBuilder<NavigationStack<S>>(
+        stream: navigationStackContainer.navigationChannel,
+        initialData: navigationStackContainer.navigationStack,
+        builder: (context, snapshot) {
+          final states = snapshot.data!.states;
+          final processedStates = statesInterceptor.intercept(states);
+          final pages = states.map(mapStateToPage).whereType<Page>().toList();
+          logWithTag('build $states after processing $processedStates mapped to $pages');
+          return Navigator(
+            key: navigatorKey,
+            pages: pages,
+            onPopPage: popPage,
+          );
+        });
   }
 
   @override
   @protected
-  Future<void> setNewRoutePath(S state) {
-    logWithTag('New route path generate new state $state');
-    return _addNewState(state);
-  }
+  Future<void> setNewRoutePath(NavigationStack<S> state) {}
 
   @override
-  Future<void> navigate(E event) async {
-    final states = await mapEventToStates(event);
-    logWithTag('map event($event) To states $states');
-    if (states != null) {
-      await _addNewStates(states);
-    }
-  }
+  Future<void> navigate(E event) {}
 
   @protected
   bool popPage(Route<dynamic> route, dynamic result) {
-    logWithTag('popPage with result $result from route $route');
-    popLast();
-    if (result is ResultModel) {
-      resultsController.add(result);
-    }
-    return route.didPop(result);
+    logWithTag('popPage from route $route');
+    return pop(result: (result is ResultModel) ? result : null);
   }
 
   /**
@@ -95,36 +81,28 @@ abstract class BaseRouterDelegate<S extends NavigationBaseState, E> extends Rout
 
   @override
   bool pop({ResultModel? result}) {
-    final NavigatorState? navigator = navigatorKey.currentState;
-    if (navigator == null || !navigator.canPop()) return false;
-    navigator.pop(result);
-    return true;
-  }
-
-  Future<void> _addNewState(S state) async {
-    final newNavigatorState = navigatorState.clearNoHistory().addNewState(state);
-    if (navigatorState != newNavigatorState) {
-      navigatorState = newNavigatorState;
-      notifyListeners();
+    logWithTag('pop with result $result');
+    final states = navigationStackContainer.navigationStack.states;
+    if (states.length > 1) {
+      final navigationStack = (NavigationStackBuilder.defaultBuilder(states: states)..pop()).build();
+      navigationStackContainer.addState(navigationStack);
+      if (result != null) resultsController.add(result);
+      return true;
+    } else {
+      return false;
     }
   }
 
-  Future<void> _addNewStates(List<S> states) async {
-    final newNavigatorState = navigatorState.clearNoHistory().addNewStates(states);
-    if (navigatorState != newNavigatorState) {
-      navigatorState = newNavigatorState;
-      notifyListeners();
-    }
+  @override
+  void addListener(VoidCallback listener) {
+    navigationStackContainer.navigationChannel.listen((event) {});
   }
+
+  @override
+  void removeListener(VoidCallback listener) {}
 
   @protected
   CompositeStatesInterceptor<S> get statesInterceptor;
-
-  @protected
-  NavigatorDelegateState<S> get navigatorState;
-
-  @protected
-  set navigatorState(NavigatorDelegateState<S> navigatorDelegateState);
 
   @protected
   Page? mapStateToPage(S state);
