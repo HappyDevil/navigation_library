@@ -1,0 +1,23 @@
+@startuml
+component RouteInformationProvider
+component BaseInformationParser
+actor Program
+component BaseRouterDelegate {
+    component RouteStateInterceptor
+    component NavigationReducer
+    component StackBuilder
+    component StatesVirtualizer
+    component Router
+}
+
+
+RouteInformationProvider --> BaseInformationParser : path: RouteInformation
+BaseInformationParser-->  RouteStateInterceptor : pathState: State
+RouteStateInterceptor --> StackBuilder: newStates: List<State>
+Program --> NavigationReducer : event: Event
+NavigationReducer --> RouteStateInterceptor : newStates: List<State>
+StackBuilder --> StatesVirtualizer : allStates: List<State>
+StatesVirtualizer --> Router : resultStates: List<State>
+
+
+@enduml
